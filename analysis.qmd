@@ -1,0 +1,46 @@
+---
+title: "election"
+author: "Shyamali Sheth"
+format: html
+---
+
+
+
+$$death_age = \beta{0} + \beta{1} treatmenti + \beta{2}win_margini + \
+\beta{4}repubi + \beta{5}thirdpartyi + \epsilon{i}$$
+
+
+
+
+
+```{r}
+#| label: setup
+#| message: false
+#| cache: true
+library(tidyverse)
+library(primer.data)
+library(brms)
+library(tidybayes)
+library(gtsummary)
+```
+
+```{r}
+x <- governors |> 
+  select(death_age, election_age, win_margin, party, sex) |> 
+  mutate(treatment = ifelse(win_margin > 0, "win", "lose")) |> 
+  filter(abs(win_margin) < 5) 
+
+fit_elec_1 <- brm(formula = death_age ~ treatment + win_margin +
+                 party,
+                  data = x,
+                  family = gaussian(),
+                  refresh = 0,
+                  silent = 2,
+                  seed = 9)
+
+fixef(fit_elec_1)
+
+tbl_regression(fit_elec_1, 
+               intercept = TRUE)
+```
+
