@@ -21,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -132,30 +98,8 @@ window.Quarto = {
 </header>
 
 
-<p><span class="math display">\[death_age = \beta{0} + \beta{1} treatmenti + \beta{2}win_margini + \
-\beta{4}repubi + \beta{5}thirdpartyi + \epsilon{i}\]</span></p>
+<p><span class="math display">\[death_age = \beta{0} + \beta{1} treatmenti + \beta{2}win_margini + \beta{3}repubi + \beta{4}thirdpartyi + \epsilon{i}\]</span></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(primer.data)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> governors <span class="sc">|&gt;</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(death_age, election_age, win_margin, party, sex) <span class="sc">|&gt;</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">ifelse</span>(win_margin <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">"win"</span>, <span class="st">"lose"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(win_margin) <span class="sc">&lt;</span> <span class="dv">5</span>) </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>fit_elec_1 <span class="ot">&lt;-</span> <span class="fu">brm</span>(<span class="at">formula =</span> death_age <span class="sc">~</span> treatment <span class="sc">+</span> win_margin <span class="sc">+</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 party,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> x,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">gaussian</span>(),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">refresh =</span> <span class="dv">0</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">silent =</span> <span class="dv">2</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seed =</span> <span class="dv">9</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">fixef</span>(fit_elec_1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 Estimate Est.Error       Q2.5      Q97.5
 Intercept       73.542859 1.8008034  69.941591 77.0647733
@@ -164,30 +108,28 @@ win_margin      -1.406902 0.5116411  -2.402440 -0.4211054
 partyRepublican  3.976145 1.3926685   1.292565  6.7439850
 partyThirdparty -9.315387 8.0616311 -25.004359  6.1882960</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl_regression</span>(fit_elec_1, </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in tidy.brmsfit(x, ..., effects = "fixed"): some parameter names
 contain underscores: term naming may be unreliable!</code></pre>
 </div>
 <div class="cell-output-display">
-<div id="saptcwqggk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#saptcwqggk table {
+<div id="hraxkxafcv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hraxkxafcv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#saptcwqggk thead, #saptcwqggk tbody, #saptcwqggk tfoot, #saptcwqggk tr, #saptcwqggk td, #saptcwqggk th {
+#hraxkxafcv thead, #hraxkxafcv tbody, #hraxkxafcv tfoot, #hraxkxafcv tr, #hraxkxafcv td, #hraxkxafcv th {
   border-style: none;
 }
 
-#saptcwqggk p {
+#hraxkxafcv p {
   margin: 0;
   padding: 0;
 }
 
-#saptcwqggk .gt_table {
+#hraxkxafcv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -213,12 +155,12 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-left-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_caption {
+#hraxkxafcv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#saptcwqggk .gt_title {
+#hraxkxafcv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -230,7 +172,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-bottom-width: 0;
 }
 
-#saptcwqggk .gt_subtitle {
+#hraxkxafcv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -242,7 +184,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-top-width: 0;
 }
 
-#saptcwqggk .gt_heading {
+#hraxkxafcv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -254,13 +196,13 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_bottom_border {
+#hraxkxafcv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_col_headings {
+#hraxkxafcv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -275,7 +217,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_col_heading {
+#hraxkxafcv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -295,7 +237,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   overflow-x: hidden;
 }
 
-#saptcwqggk .gt_column_spanner_outer {
+#hraxkxafcv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -307,15 +249,15 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 4px;
 }
 
-#saptcwqggk .gt_column_spanner_outer:first-child {
+#hraxkxafcv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#saptcwqggk .gt_column_spanner_outer:last-child {
+#hraxkxafcv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#saptcwqggk .gt_column_spanner {
+#hraxkxafcv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -327,11 +269,11 @@ contain underscores: term naming may be unreliable!</code></pre>
   width: 100%;
 }
 
-#saptcwqggk .gt_spanner_row {
+#hraxkxafcv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#saptcwqggk .gt_group_heading {
+#hraxkxafcv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -357,7 +299,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   text-align: left;
 }
 
-#saptcwqggk .gt_empty_group_heading {
+#hraxkxafcv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -372,15 +314,15 @@ contain underscores: term naming may be unreliable!</code></pre>
   vertical-align: middle;
 }
 
-#saptcwqggk .gt_from_md > :first-child {
+#hraxkxafcv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#saptcwqggk .gt_from_md > :last-child {
+#hraxkxafcv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#saptcwqggk .gt_row {
+#hraxkxafcv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -399,7 +341,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   overflow-x: hidden;
 }
 
-#saptcwqggk .gt_stub {
+#hraxkxafcv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -412,7 +354,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 5px;
 }
 
-#saptcwqggk .gt_stub_row_group {
+#hraxkxafcv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -426,15 +368,15 @@ contain underscores: term naming may be unreliable!</code></pre>
   vertical-align: top;
 }
 
-#saptcwqggk .gt_row_group_first td {
+#hraxkxafcv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#saptcwqggk .gt_row_group_first th {
+#hraxkxafcv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#saptcwqggk .gt_summary_row {
+#hraxkxafcv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -444,16 +386,16 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 5px;
 }
 
-#saptcwqggk .gt_first_summary_row {
+#hraxkxafcv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_first_summary_row.thick {
+#hraxkxafcv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#saptcwqggk .gt_last_summary_row {
+#hraxkxafcv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -463,7 +405,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_grand_summary_row {
+#hraxkxafcv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -473,7 +415,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 5px;
 }
 
-#saptcwqggk .gt_first_grand_summary_row {
+#hraxkxafcv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -483,7 +425,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-top-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_last_grand_summary_row_top {
+#hraxkxafcv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -493,11 +435,11 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_striped {
+#hraxkxafcv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#saptcwqggk .gt_table_body {
+#hraxkxafcv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -506,7 +448,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-bottom-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_footnotes {
+#hraxkxafcv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -520,7 +462,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_footnote {
+#hraxkxafcv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -529,7 +471,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 5px;
 }
 
-#saptcwqggk .gt_sourcenotes {
+#hraxkxafcv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -543,7 +485,7 @@ contain underscores: term naming may be unreliable!</code></pre>
   border-right-color: #D3D3D3;
 }
 
-#saptcwqggk .gt_sourcenote {
+#hraxkxafcv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -551,72 +493,72 @@ contain underscores: term naming may be unreliable!</code></pre>
   padding-right: 5px;
 }
 
-#saptcwqggk .gt_left {
+#hraxkxafcv .gt_left {
   text-align: left;
 }
 
-#saptcwqggk .gt_center {
+#hraxkxafcv .gt_center {
   text-align: center;
 }
 
-#saptcwqggk .gt_right {
+#hraxkxafcv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#saptcwqggk .gt_font_normal {
+#hraxkxafcv .gt_font_normal {
   font-weight: normal;
 }
 
-#saptcwqggk .gt_font_bold {
+#hraxkxafcv .gt_font_bold {
   font-weight: bold;
 }
 
-#saptcwqggk .gt_font_italic {
+#hraxkxafcv .gt_font_italic {
   font-style: italic;
 }
 
-#saptcwqggk .gt_super {
+#hraxkxafcv .gt_super {
   font-size: 65%;
 }
 
-#saptcwqggk .gt_footnote_marks {
+#hraxkxafcv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#saptcwqggk .gt_asterisk {
+#hraxkxafcv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#saptcwqggk .gt_indent_1 {
+#hraxkxafcv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#saptcwqggk .gt_indent_2 {
+#hraxkxafcv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#saptcwqggk .gt_indent_3 {
+#hraxkxafcv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#saptcwqggk .gt_indent_4 {
+#hraxkxafcv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#saptcwqggk .gt_indent_5 {
+#hraxkxafcv .gt_indent_5 {
   text-indent: 25px;
 }
 
-#saptcwqggk .katex-display {
+#hraxkxafcv .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#saptcwqggk div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#hraxkxafcv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -687,6 +629,17 @@ contain underscores: term naming may be unreliable!</code></pre>
 
 </table>
 
+</div>
+</div>
+</div>
+<p>Temperance Variables: Treatment, Party, Win margin</p>
+<p>values: party: Democrat treatment: win, lose win_margin: 0</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
 </div>
 </div>

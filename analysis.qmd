@@ -2,21 +2,17 @@
 title: "election"
 author: "Shyamali Sheth"
 format: html
+execute: 
+  echo: false
 ---
 
 
-
-$$death_age = \beta{0} + \beta{1} treatmenti + \beta{2}win_margini + \
-\beta{4}repubi + \beta{5}thirdpartyi + \epsilon{i}$$
-
-
-
+$$death_age = \beta{0} + \beta{1} treatmenti + \beta{2}win_margini + \beta{3}repubi + \beta{4}thirdpartyi + \epsilon{i}$$
 
 
 ```{r}
 #| label: setup
 #| message: false
-#| cache: true
 library(tidyverse)
 library(primer.data)
 library(brms)
@@ -25,6 +21,8 @@ library(gtsummary)
 ```
 
 ```{r}
+#| cache: true
+
 x <- governors |> 
   select(death_age, election_age, win_margin, party, sex) |> 
   mutate(treatment = ifelse(win_margin > 0, "win", "lose")) |> 
@@ -43,4 +41,38 @@ fixef(fit_elec_1)
 tbl_regression(fit_elec_1, 
                intercept = TRUE)
 ```
+
+
+
+Temperance
+Variables: Treatment, Party, Win margin
+
+values: party: Democrat
+        treatment: win, lose
+        win_margin: 0
+
+
+```{r}
+ndata <- tibble(expand_grid(treatment = c("win", "lose"), 
+                            party = c("Democrat", "Republican", "Third party"),
+                            win_margin = 0))
+
+fit_elec_1 |>
+  add_epred_draws(newdata = ndata) |>
+  ggplot(aes(x = .epred, y = party, fill = treatment))+
+  stat_slab() +
+  labs(title = "Expected Lifespan Given Election Outcome",
+       subtitle = "Winning is associated with about 8 extra years",
+       x = "Expected Lifespan",
+       y = "",
+       color = "Election Result")
+
+```
+
+
+
+
+
+
+
 
